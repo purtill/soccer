@@ -41,7 +41,22 @@ results[,N := N/sum(N)]
 
 ## plot results by betting
 
-(p <- ggplot(data=Match, aes(x=B365H, y=result))
+(p <- ggplot(data=Match, aes(x=B365H, y=as.numeric(result==1)))
   + geom_point()
-  + geom_smooth(method = "glm", se = FALSE)
+  + geom_smooth(method = "glm", 
+                method.args = list(family = "binomial"), 
+                se = FALSE)
   + scale_x_continuous(trans='log2'))
+
+## how would going with the bets work out?
+
+set.seed(42)
+
+samp <- sample(25979, 5000)
+
+train <- Match[-samp]
+test <- Match[samp]
+
+model <- glm(formula=as.numeric(result==1) ~ B365H, data=train, family=binomial)
+
+pred <- predict.glm(model, newdata = test, type = "response")
