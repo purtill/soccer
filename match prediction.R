@@ -48,15 +48,27 @@ results[,N := N/sum(N)]
                 se = FALSE)
   + scale_x_continuous(trans='log2'))
 
-## how would going with the bets work out?
+## join team names
 
-set.seed(42)
+Match <- merge(x = Match, y= Team[,c("team_api_id", "team_long_name")], by.x="home_team_api_id", by.y = "team_api_id", all.x=TRUE)
+setnames(Match, "team_long_name", "home_team_name")
 
-samp <- sample(25979, 5000)
+Match <- merge(x = Match, y= Team[,c("team_api_id", "team_long_name")], by.x="away_team_api_id", by.y = "team_api_id", all.x=TRUE)
+setnames(Match, "team_long_name", "away_team_name")
 
-train <- Match[-samp]
-test <- Match[samp]
+head(Match[home_team_name=="Chelsea",])
 
-model <- glm(formula=as.numeric(result==1) ~ B365H, data=train, family=binomial)
+## Focus on English matches
 
-pred <- predict.glm(model, newdata = test, type = "response")
+eng_match <- Match[country_id==1729,]
+
+epl1516 <- eng_match[season=="2015/2016"]
+
+ggplot(data=eng_match, aes(x=away_team_name, y=home_team_name)) +
+  geom_point(aes(color=as.factor(result))) +
+  scale_color_hue()
+
+arsenalseason <- epl1516[(home_team_name=="Arsenal" | away_team_name=="Arsenal"),c("home_team_name", "away_team_name","stage","date", "result")]
+setkey(arsenalseason, stage)
+
+ggplot(arsenalseason, aes(x=stage, y=1)) + geom_point(aes(color=(as.factor((-2*as.numeric(away_team_name=="Arsenal")+1)*result))))
