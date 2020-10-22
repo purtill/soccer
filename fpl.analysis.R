@@ -26,13 +26,26 @@ team.keys <- gamelist[, .SD[1], by=team_h]
 team.keys <- team.keys[,list(home,team_h)]
 names(team.keys) <- c("team", "team.id")
 
+# team points scored by gameweek
+
+weekpoints <- GWdata[info, on = "playername"]
+weekpoints <- weekpoints[,keyby = .(team,round,opponent_team,(element_type %in% c(1,2))),.(points = sum(total_points))]
+
+weekpoints <- merge.data.table(x=weekpoints, y=team.keys, by.x="team", by.y="team.id")
+setnames(weekpoints, old="team.y", new="team.name")
+
+weekpoints <- merge.data.table(x=weekpoints, y=team.keys, by.x="opponent_team", by.y="team.id")
+setnames(weekpoints, old="team.y", new="opponent.name")
+
+ggplot(weekpoints, aes(x=round, y=points)) + geom_line(aes(color=factor(element_type))) + facet_wrap(~team.name) + theme_minimal()
+
 # comparing points scored against each team
 
 GW.points.ag <- GWdata[,keyby = .(opponent_team,round),.(points.allowed = sum(total_points))]
 setnames(GW.points.ag, new = "team.id", old = "opponent_team")
 GW.points.ag <- GW.points.ag[team.keys, on = "team.id"]
 
-ave.points.ag <- GW.points.ag[,.(ave=mean(points.allowed)),by=team.id]
+ave.points.ag <- GW.points.ag[,.(ave=mean(points.allowed)),by=team]
 
 current.round <- max(GWdata$round, na.rm = TRUE)
 
@@ -52,8 +65,10 @@ upcoming.weeks <- upcoming.weeks[, exp.points := sum(ave), by = team]
 
 custom.FDR <- upcoming.weeks[, .SD[1], by = team]
 custom.FDR <- custom.FDR[,list(team, exp.points)]
+custom.FDR <- merge.data.table(x = custom.FDR, y = ave.points.ag, by = "team")
+setnames(custom.FDR, old = "ave", new = "points.allowed")
 
-ggplot(custom.FDR, aes(x=team, y=exp.points)) + geom_col(aes(fill=exp.points)) + coord_flip()
+ggplot(custom.FDR, aes(x=reorder(team, exp.points), y=exp.points)) + geom_col(fill = "darkslategray4") + coord_flip()
 
 # comparing players by points per cost
 
