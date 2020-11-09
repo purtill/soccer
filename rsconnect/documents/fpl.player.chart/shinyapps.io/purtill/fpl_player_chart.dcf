@@ -1,0 +1,12 @@
+name: fpl_player_chart
+title: fpl_player_chart
+username:
+account: purtill
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3171605
+bundleId: 3824792
+url: https://purtill.shinyapps.io/fpl_player_chart/
+when: 1604599852.46324
+asMultiple: FALSE
+asStatic: FALSE
