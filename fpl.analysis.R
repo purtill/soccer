@@ -29,7 +29,7 @@ names(team.keys) <- c("team", "team.id")
 # team points scored by gameweek
 
 weekpoints <- GWdata[info, on = "playername"]
-weekpoints <- weekpoints[,keyby = .(team,round,opponent_team,(element_type %in% c(1,2))),.(points = sum(total_points))]
+weekpoints <- weekpoints[,keyby = .(team,round,(element_type %in% c(1,2))),.(points = sum(total_points))]
 
 weekpoints <- merge.data.table(x=weekpoints, y=team.keys, by.x="team", by.y="team.id")
 setnames(weekpoints, old="team.y", new="team.name")
@@ -37,7 +37,7 @@ setnames(weekpoints, old="team.y", new="team.name")
 weekpoints <- merge.data.table(x=weekpoints, y=team.keys, by.x="opponent_team", by.y="team.id")
 setnames(weekpoints, old="team.y", new="opponent.name")
 
-ggplot(weekpoints, aes(x=round, y=points)) + geom_line(aes(color=factor(element_type))) + facet_wrap(~team.name) + theme_minimal()
+ggplot(weekpoints, aes(x=round, y=points)) + geom_line() + facet_wrap(~team.name) + theme_minimal()
 
 # comparing points scored against each team
 
