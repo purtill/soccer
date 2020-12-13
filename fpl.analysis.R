@@ -37,7 +37,7 @@ setnames(weekpoints, old="team.y", new="team.name")
 weekpoints <- merge.data.table(x=weekpoints, y=team.keys, by.x="opponent_team", by.y="team.id")
 setnames(weekpoints, old="team.y", new="opponent.name")
 
-ggplot(weekpoints, aes(x=round, y=points)) + geom_line() + facet_wrap(~team.name) + theme_minimal()
+ggplot(weekpoints, aes(x=round, y=points)) + geom_line(aes(color=element_type)) + facet_wrap(~team.name) + theme_minimal()
 
 # comparing points scored against each team
 
