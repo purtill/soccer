@@ -95,7 +95,7 @@ form %>%
   ggplot(aes(x=now_cost, y=form)) +
   geom_point(aes(color=-shift)) +
   scale_colour_gradient2(low = 'red', mid = 'gray50', high = 'green') +
-  geom_text_repel(aes(label = ifelse(form > 5, as.character(playername),""))) +
+  geom_text_repel(aes(label = ifelse(form > 4, as.character(playername),""))) +
   facet_wrap(~element_type) + 
   theme_bw()
 
